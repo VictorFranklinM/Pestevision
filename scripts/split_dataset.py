@@ -2,26 +2,26 @@ import random
 import shutil
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 
-SOURCE_DIR = PROJECT_DIR / "dataset"
-OUTPUT_DIR = PROJECT_DIR / "dataset_split"
+SOURCE_DIR = PROJECT_DIR / "data" / "raw"
+OUTPUT_DIR = PROJECT_DIR / "data" / "split"
 
 SEED = 42
 
 SPLIT_COUNTS = {
-    "Ants": (400, 99),
-    "Bees": (405, 95),
-    "Beetle": (331, 85),
-    "Catterpillar": (329, 105),
-    "Earthworms": (246, 77),
-    "Earwig": (390, 76),
-    "Grasshopper": (390, 95),
-    "Moth": (397, 100),
-    "Slug": (316, 75),
-    "Snail": (405, 95),
-    "Wasp": (392, 106),
-    "Weevil": (394, 91),
+    "ants": (400, 99),
+    "bees": (405, 95),
+    "beetle": (331, 85),
+    "catterpillar": (329, 105),
+    "earthworms": (246, 77),
+    "earwig": (390, 76),
+    "grasshopper": (390, 95),
+    "moth": (397, 100),
+    "slug": (316, 75),
+    "snail": (405, 95),
+    "wasp": (392, 106),
+    "weevil": (394, 91),
 }
 
 random.seed(SEED)

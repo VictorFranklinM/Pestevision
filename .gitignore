@@ -1,0 +1,13 @@
+# --- Dataset ---
+data
+
+# --- Python / uv ---
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
