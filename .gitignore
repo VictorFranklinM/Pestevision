@@ -1,5 +1,6 @@
 # --- Dataset ---
-data
+data/split/*
+!data/split/manifest.json
 
 # --- Python / uv ---
 __pycache__/

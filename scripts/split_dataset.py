@@ -1,3 +1,5 @@
+import re
+import json
 import random
 import shutil
 from pathlib import Path
@@ -28,11 +30,26 @@ random.seed(SEED)
 
 train_dir = OUTPUT_DIR / "train"
 test_dir = OUTPUT_DIR / "test"
+manifest_path = OUTPUT_DIR / "manifest.json"
 
 train_dir.mkdir(parents=True, exist_ok=True)
 test_dir.mkdir(parents=True, exist_ok=True)
+manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
+manifest = {"_meta": {
+            "seed": SEED,
+            "test_fraction_source": "paper_table1_predefined_counts",
+            "generated_by": "scripts/split_dataset.py",
+            "num_classes": len(SPLIT_COUNTS),
+        }, "train": {}, "test": {}}
+
+def natural_key(s):
+    return [int(part) if part.isdigit() else part.lower()
+            for part in re.split(r'(\d+)', s)]
 
 for class_name, (train_count, test_count) in SPLIT_COUNTS.items():
+    train_list = []
+    test_list = []
 
     source_class_dir = SOURCE_DIR / class_name
 
@@ -70,18 +87,27 @@ for class_name, (train_count, test_count) in SPLIT_COUNTS.items():
             image,
             train_class_dir / image.name
         )
+        train_list.append(image.name)
 
     for image in test_images:
         shutil.copy2(
             image,
             test_class_dir / image.name
         )
+        test_list.append(image.name)
 
     print(
         f"{class_name}: "
-        f"{len(train_images)} train / "
+        f"{len(train_images)} train | "
         f"{len(test_images)} test"
     )
 
+    manifest["train"][class_name] = sorted(train_list, key=natural_key)
+    manifest["test"][class_name] = sorted(test_list, key=natural_key)
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+
+
 print("\nDataset split completed!")
 print(f"Output: {OUTPUT_DIR}")
+print(f"Generated manifest at: {manifest_path}")
