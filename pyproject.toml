@@ -6,15 +6,20 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.11.2",
-    "numpy>=2.5.3",
+    "numpy>=2.5.2",
     "pandas>=3.0.6",
     "pillow>=12.3.0",
     "pyyaml>=6.0.3",
     "scikit-learn>=1.9.1",
+    "torch>=2.14.0",
+    "torchvision>=0.29.0",
 ]
 
 [project.scripts]
 pestevision = "pestevision:main"
+
+[[tool.uv.index]]
+url = "https://download.pytorch.org/whl/cu130"
 
 [build-system]
 requires = ["uv_build>=0.12.18,<0.13.0"]
