@@ -1,6 +1,6 @@
 # --- Dataset ---
 data/split/*
-!data/split/manifest.json
+!data/split/manifest_seed*.json
 
 # --- Python / uv ---
 __pycache__/
