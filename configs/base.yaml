@@ -1,0 +1,32 @@
+seed: 42
+
+data:
+  raw_dir: "data/raw"
+  manifest_path: "data/split/manifest_seed42.json"
+  image_size: 224
+  val_fraction: 0.2
+  num_workers: 4
+  batch_size: 32
+
+training:
+  optimizer: adam
+  lr_patience: 10
+  early_stopping_patience: 21
+  max_epochs: 200
+
+architectures:
+  - alexnet
+  - resnet50
+  - efficientnet_b4
+  - vit_b_16
+
+augmentation_strategies:
+  - no_da
+  - da1
+  - da2
+  - da3
+
+paths:
+  checkpoints_dir: "outputs/checkpoints"
+  logs_dir: "outputs/logs"
+  results_dir: "outputs/results"
