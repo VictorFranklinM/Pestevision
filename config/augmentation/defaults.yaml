@@ -1,0 +1,17 @@
+steps:
+  - crop:
+      size: 224
+      scale: [0.8, 1.0]
+  - flip:
+      axis: horizontal
+      probability: 0.5
+  - rotate:
+      degrees: 15
+  - color_jitter:
+      brightness: null
+      contrast: null
+      saturation: null
+      hue: null
+  - erase:
+      probability: 0.5
+      scale: [0.02, 0.25]
