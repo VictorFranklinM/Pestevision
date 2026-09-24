@@ -3,7 +3,6 @@ seed: 42
 data:
   raw_dir: "data/raw"
   manifest_path: "data/split/manifest_seed42.json"
-  image_size: 224
   val_fraction: 0.2
   num_workers: 4
   batch_size: 32
