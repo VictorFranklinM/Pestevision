@@ -87,3 +87,58 @@ Isso instala o pacote **e** registra a versão em `pyproject.toml` / `uv.lock`, 
 - **"uv: command not found"** → reabra o terminal, ou rode de novo o comando de instalação do Passo 1.
 - **`uv sync` falha ao resolver dependências** → confira se está usando um sistema operacional/CPU suportado e tente rodar `uv sync` de novo; se persistir, copie o erro e peça ajuda.
 - **Scripts não encontram o dataset** → confira se você rodou o Passo 5 (`setup_dataset.py`) antes de qualquer outra coisa.
+
+## Track C: training/evaluation scaffold
+
+The default providers use fixed seeded `torch.randn` images and random labels.
+These runs validate the pipeline only; their metrics are not research results.
+
+```bash
+uv run python -m pestevision.train --epochs 3 --output-dir outputs/dummy
+uv run python -m pestevision.evaluate outputs/dummy/best.pt --output outputs/dummy/test.json
+uv run python -m unittest discover -s tests -v
+```
+
+Use `--config configs/base.yaml` for the shared settings and `--device cuda`
+for GPU execution. Defaults are Adam (LR 0.001), at most 200 epochs,
+`ReduceLROnPlateau(patience=10, factor=0.1)` and early stopping after 21
+consecutive epochs without a strictly lower validation loss. PyTorch reduces
+LR when the bad-epoch count **exceeds** patience (the 11th bad epoch).
+LR and factor are scaffold defaults, not architecture-specific paper settings;
+override `training.lr` and `training.lr_factor` in YAML.
+
+`best.pt` contains the best validation-loss model, configuration, epoch, and
+optimizer/scheduler states. `history.json` records split metrics and learning
+rates per epoch. Training restores the best weights and never evaluates the
+test split; the separate evaluation command loads the saved best weights.
+Checkpoint resume is not implemented. Use a distinct output directory per run.
+
+Metrics implement standard multiclass accuracy/precision/recall/F1 definitions;
+exact agreement with Section 3.6 still requires checking the article.
+Precision, recall and F1 have macro and true-support-weighted averages; accuracy
+is a single overall multiclass fraction. Metrics use the whole split's confusion
+matrix, with all configured classes included in macro averages and undefined
+ratios set to zero. Loss is averaged by sample count, including partial batches.
+
+Provider imports live in `src/pestevision/interfaces.py`; replace one line per
+interface when each real implementation is ready:
+
+```python
+from .data import build_dataloaders       # already available
+from .models import build_model          # contract: build_model(cfg) -> nn.Module
+from .augmentations import get_transform # contract: get_transform(strategy, split)
+```
+
+The loader contract is `build_dataloaders(cfg, transforms)` returning `train`,
+`val`, and `test` loaders of `(images, int64_labels)` batches. Models return raw
+`[batch, num_classes]` logits. Set `num_classes` (default 12) and `strategy`
+(default `no_da`) in the config. Keep class indices identical across splits and
+between training and evaluation. Keep provider selection consistent when loading
+a checkpoint; weights are validated by `load_state_dict`. An eventual model
+factory with another signature needs a thin adapter at this boundary only.
+
+Optional `training.min_delta` (default `0.0`) sets the minimum validation-loss
+improvement that resets early stopping. Smaller improvements still update the
+best checkpoint; the LR scheduler continues to use any strictly lower loss.
+Invalid labels, empty batches/loaders, inconsistent batch sizes, and fractional
+confusion counts raise explicit errors before producing a misleading report.
