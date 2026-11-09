@@ -194,9 +194,9 @@ def build_dataloaders(
 
 if __name__ == "__main__":
     # Quick sanity check: run `python -m pestevision.data` from the repo
-    # root (or `python src/pestevision/data.py`) once configs/base.yaml
+    # root (or `python src/pestevision/data.py`) once config/base.yaml
     # points at your real data/raw and manifest.
-    cfg = load_config("configs/base.yaml")
+    cfg = load_config("config/base.yaml")
     train_ds, val_ds, test_ds = build_datasets(cfg)
 
     print(train_ds)
