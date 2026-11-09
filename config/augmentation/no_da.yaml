@@ -1,0 +1,3 @@
+steps:
+  - crop:
+      size: 224

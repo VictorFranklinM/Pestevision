@@ -99,7 +99,7 @@ uv run python -m pestevision.evaluate outputs/dummy/best.pt --output outputs/dum
 uv run python -m unittest discover -s tests -v
 ```
 
-Use `--config configs/base.yaml` for the shared settings and `--device cuda`
+Use `--config config/base.yaml` for the shared settings and `--device cuda`
 for GPU execution. Defaults are Adam (LR 0.001), at most 200 epochs,
 `ReduceLROnPlateau(patience=10, factor=0.1)` and early stopping after 21
 consecutive epochs without a strictly lower validation loss. PyTorch reduces
