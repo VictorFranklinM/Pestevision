@@ -13,7 +13,7 @@ def _find_project_root(start: Path, marker: str = "pyproject.toml") -> Path:
 
 
 class Settings(BaseModel):
-    root_path: Path = _find_project_root()
+    root_path: Path = _find_project_root(Path(__file__))
     config_path: Path = root_path / "config"
     data_path: Path = root_path / "data"
 
