@@ -30,3 +30,11 @@ paths:
   checkpoints_dir: "outputs/checkpoints"
   logs_dir: "outputs/logs"
   results_dir: "outputs/results"
+
+# Paper Table 2 (best values found by the authors' grid search). We do not
+# re-run the grid search; run_training.py reads these per architecture.
+hyperparameters:
+  alexnet:         {lr: 0.00001, batch_size: 128}
+  resnet50:        {lr: 0.00001, batch_size: 16}
+  efficientnet_b4: {lr: 0.0001,  batch_size: 16}
+  vit_b_16:        {lr: 0.00001, batch_size: 32}
