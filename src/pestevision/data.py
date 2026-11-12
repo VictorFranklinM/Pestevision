@@ -1,10 +1,12 @@
 """
+Dataset and dataloaders for the Agricultural Pests data (manifest + data/raw).
+
 Usage:
     from pestevision.data import build_datasets, build_dataloaders
 
     train_ds, val_ds, test_ds = build_datasets(cfg)
 
-    # or, once the augmentation pipeline exists:
+    # or with the real augmentation pipeline (see interfaces.py):
     transforms = {
         "train": get_transform(strategy, "train"),
         "val":   get_transform(strategy, "val"),
@@ -20,6 +22,7 @@ import random
 from pathlib import Path
 from typing import Callable, Optional
 
+import torch
 import yaml
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
@@ -146,7 +149,7 @@ class PestDataset(Dataset):
         )
 
 
-def build_datasets( # change when the data augmentation pipeline is finished
+def build_datasets(
     cfg: dict, transforms: Optional[dict[str, Callable]] = None
 ) -> tuple[PestDataset, PestDataset, PestDataset]:
     """
@@ -185,10 +188,20 @@ def build_dataloaders(
     bs = batch_size or cfg["data"]["batch_size"]
     num_workers = cfg["data"]["num_workers"]
 
+    def make_loader(dataset, shuffle, persistent):
+        # persistent_workers keeps the worker processes alive between epochs. On Windows
+        # workers are spawned (not forked), so this avoids paying the start-up cost every
+        # epoch. It is only valid with num_workers > 0. pin_memory speeds up CPU -> GPU copies.
+        return DataLoader(
+            dataset, batch_size=bs, shuffle=shuffle, num_workers=num_workers,
+            pin_memory=torch.cuda.is_available(),
+            persistent_workers=persistent and num_workers > 0,
+        )
+
     return {
-        "train": DataLoader(train_ds, batch_size=bs, shuffle=True, num_workers=num_workers),
-        "val": DataLoader(val_ds, batch_size=bs, shuffle=False, num_workers=num_workers),
-        "test": DataLoader(test_ds, batch_size=bs, shuffle=False, num_workers=num_workers),
+        "train": make_loader(train_ds, shuffle=True, persistent=True),
+        "val": make_loader(val_ds, shuffle=False, persistent=True),
+        "test": make_loader(test_ds, shuffle=False, persistent=False),  # used once, at the end
     }
 
 

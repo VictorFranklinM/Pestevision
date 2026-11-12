@@ -66,7 +66,6 @@ Step = Annotated[
 
 class AugmentationConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
-    normalize: bool = True
     steps: list[Step] = Field(min_length=1)
 
     @field_validator("steps", mode="before")

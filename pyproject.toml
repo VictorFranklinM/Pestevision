@@ -1,7 +1,7 @@
 [project]
 name = "pestevision"
 version = "0.1.0"
-description = "Add your description here"
+description = "Reproduction of 'Classification of Agricultural Pests Through Digital Images Using Deep Learning' (RITA, 2025), plus an improvement study."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -15,9 +15,6 @@ dependencies = [
     "torch>=2.14.0",
     "torchvision>=0.29.0",
 ]
-
-[project.scripts]
-pestevision = "pestevision:main"
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu126" }

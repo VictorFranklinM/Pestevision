@@ -88,6 +88,8 @@ def main():
     parser.add_argument("--split", choices=("val", "test"), default="test")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--predictions", type=Path,
+                        help="also write one row per image (path, prediction, probabilities) to this CSV")
     args = parser.parse_args()
     from .interfaces import build_components
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
@@ -96,6 +98,11 @@ def main():
     model.load_state_dict(checkpoint["model_state_dict"])
     report = evaluate(model, loaders[args.split], cfg.get("num_classes", 12), args.device)
     report.update(split=args.split, checkpoint_epoch=checkpoint["epoch"])
+    if args.predictions:
+        from .predictions import collect_predictions, write_predictions_csv
+        loader = loaders[args.split]
+        write_predictions_csv(args.predictions, collect_predictions(model, loader, args.device),
+                              loader.dataset)
     serialized = json.dumps(report, indent=2, allow_nan=False)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

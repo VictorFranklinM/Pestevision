@@ -27,8 +27,8 @@ augmentation_strategies:
   - da3
 
 paths:
-  checkpoints_dir: "outputs/checkpoints"
-  logs_dir: "outputs/logs"
+  # Each run writes best.pt / history.json / results.json to <results_dir>/<arch>__<strategy>/.
+  # Test runs (--provider dummy or --epochs) go to outputs/scratch instead, never here.
   results_dir: "outputs/results"
 
 # Paper Table 2 (best values found by the authors' grid search). We do not
